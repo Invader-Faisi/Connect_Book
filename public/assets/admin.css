@@ -1,0 +1,47 @@
+body {
+    background-color: #eff2f3;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+.btn-primary {
+    background-color: #961ec8;
+    border: none;
+}
+.form-control {
+    border-radius: 5px;
+}
+.navbar-brand {
+    font-weight: bold;
+}
+.admin-card {
+    color: white;
+    border: none;
+}
+.admin-card .admin-card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.admin-card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.admin-card-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+.icon {
+    font-size: 3rem;
+}
+.bg-alumni {
+    background-color: #007bff;
+}
+.bg-students {
+    background-color: #28a745;
+}
+.bg-jobs {
+    background-color: #ffc107;
+}
+.bg-mentorship {
+    background-color: #dc3545;
+}

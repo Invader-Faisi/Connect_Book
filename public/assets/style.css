@@ -1,0 +1,20 @@
+body {
+    background-color: #eff2f3;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+.card {
+    border: none;
+}
+.btn-primary {
+    background-color: #961ec8;
+    border: none;
+}
+.form-control {
+    border-radius: 5px;
+}
+.navbar-brand {
+    font-weight: bold;
+}
+.post-card {
+    margin-bottom: 1.5rem;
+}
