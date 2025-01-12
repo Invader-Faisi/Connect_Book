@@ -12,6 +12,7 @@
                 <th>Event</th>
                 <th>Date</th>
                 <th>Place</th>
+                <th>Registrations</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -22,6 +23,24 @@
 
     </div>
 
+    <div id="eventRegister" class="card-body mt-3 d-none">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="admin-card-title fw-bold" style="color: #640D5F;" id="eventTitle"></h4>
+        </div>
+        <table class="table table-bordered mt-2">
+            <thead class="table-dark">
+            <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody id="registrationTableBody">
+            <!-- Dynamic data can be appended here -->
+            </tbody>
+        </table>
+
+    </div>
 
     <!-- Add/Update Event Modal -->
     <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
@@ -35,8 +54,15 @@
                     <form id="addEventForm">
                         <div class="mb-3">
                             <label for="eventName" class="form-label">Event Name</label>
-                            <input type="text" class="form-control" id="eventName" name="event" required>
+                            <select class="form-control" id="eventName" name="event" required>
+                                <option value="" disabled selected>Select an event</option>
+                                <option value="Seminars">Seminars</option>
+                                <option value="Reunions">Reunions</option>
+                                <option value="Alumni Dinners">Alumni Dinners</option>
+                                <option value="Guest Lecture">Guest Lecture</option>
+                            </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="eventDate" class="form-label">Date</label>
                             <input type="date" class="form-control" id="eventDate" name="date" required>
@@ -64,7 +90,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this offer?
+                    Are you sure you want to delete this event?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -78,6 +104,7 @@
 <script>
     $(document).ready(function() {
         let eventId;
+        let eventName;
         loadEvents();
 
         function loadEvents() {
@@ -97,6 +124,7 @@
                         <td>${event.event}</td>
                         <td>${event.date}</td>
                         <td>${event.place}</td>
+                        <td><button class="btn btn-info btn-sm view-btn" data-id="${event.id}" data-name="${event.event}"><i class="bi bi-eye"></i></button></td>
                         <td>
                             <button class="btn btn-primary btn-sm edit-btn" data-id="${event.id}"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-danger btn-sm delete-btn" data-id="${event.id}"><i class="bi bi-trash"></i></button>
@@ -119,6 +147,13 @@
                             $('#deleteConfirmationModal').modal('show');
                         });
 
+                        $('.view-btn').click(function() {
+                            eventId = $(this).data('id');
+                            eventName = $(this).data('name');
+                            $('#eventRegister').removeClass('d-none');
+                            showRegistrations(eventId);
+                        });
+
                     } else {
                         toastr.error('Failed to load events.');
                     }
@@ -139,7 +174,7 @@
                 success: function(response) {
                     if (response.success) {
                         data = response.data[0];
-                        $('#eventName').val(data.event);
+                        $('#eventName').val(data.event).change();
                         $('#eventDate').val(data.date);
                         $('#eventPlace').val(data.place);
                         $('#addEventModal').modal('show');
@@ -198,15 +233,44 @@
                         toastr.success(response.message);
                         loadEvents();
                     } else {
-                        toastr.error('Failed to delete offer.');
+                        toastr.error('Failed to delete event.');
                     }
                 },
                 error: function (xhr, status, error) {
-                    toastr.error('An error occurred while deleting the offer. Please try again.');
+                    toastr.error('An error occurred while deleting the event. Please try again.');
                 }
             });
         }
 
+        function showRegistrations(eventId){
+            $.ajax({
+                url: URL + 'event/getAllEventRegistration/' + eventId,
+                type: 'GET',
+                dataType: 'JSON',
+                success: function(response) {
+                    if (response.success) {
+                        $('#registrationTableBody').empty();
+                        $('#eventTitle').text('Registrations for ' + eventName);
+                        response.data.forEach(register => {
+                            const row = `
+                                <tr>
+                                    <td>${register.userType}</td>
+                                    <td>${register.name}</td>
+                                    <td>${register.email}</td>
+                                </tr>
+                            `;
+                            $('#registrationTableBody').append(row);
+                        });
+                    } else {
+                        $('#eventRegister').addClass('d-none');
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('An error occurred while loading the registrations data. Please try again.');
+                }
+            });
+        }
         // Button click handler to reset the form for adding new event
         $('button[data-bs-target="#addEventModal"]').click(function() {
             $('#submitBtn').text('Save Event');

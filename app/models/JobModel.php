@@ -11,8 +11,13 @@ class JobModel extends Model
         return $this->selectAll('job_internship');
     }
 
-    public function postJobInternship(Job_Internship $job_internship){
-        return $this->insertObject('job_internship',$job_internship);
+    public function postJobInternship(Job_Internship $job_internship, $id = ''){
+        if($id == ''){
+            return $this->insertObject('job_internship',$job_internship);
+        }else{
+            return $this->updateObject('job_internship',$job_internship,$id);
+        }
+
     }
 
     public function getMyJobInternship($id){
@@ -28,6 +33,14 @@ class JobModel extends Model
 
     public function applyJobInternship(\stdClass $job){
         return $this->insertObject('job_internship_request',$job);
+    }
+
+    public function getJobById($id){
+        return $this->selectWhere('job_internship', ['id' => $id]);
+    }
+
+    public function deleteJobInternship($id){
+        return $this->deleteWhere('job_internship',$id);
     }
 
 }

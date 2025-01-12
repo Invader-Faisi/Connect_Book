@@ -26,13 +26,40 @@ class NewsController extends Controller
         exit;
     }
 
-    public function addNews(){
+    public function addNews($id = ''){
         $news = new News($this->requestInput('title'), $this->requestInput('description'));
-        $result = $this->newsModel->addNews($news);
+
+        if($id != ''){
+            $result = $this->newsModel->addNews($news, $id);
+        }else{
+            $result = $this->newsModel->addNews($news);
+        }
+
+
         if($result){
             echo json_encode(['success'=>true,'message'=>'News added successfully']);
         }else{
             echo json_encode(['success'=>false, 'message'=>'Something went wrong']);
+        }
+        exit;
+    }
+
+    public function deleteNews($id){
+        $result = $this->newsModel->deleteNews($id);
+        if($result){
+            echo json_encode(['success'=>true,'message'=>'News deleted successfully']);
+        }else{
+            echo json_encode(['success'=>false, 'message'=>'Something went wrong']);
+        }
+        exit;
+    }
+
+    public function getNewsById($id){
+        $result = $this->newsModel->getNewsById($id);
+        if($result != null){
+            echo json_encode(['success'=>true,'data'=>$result]);
+        }else{
+            echo json_encode(['success'=>false]);
         }
         exit;
     }

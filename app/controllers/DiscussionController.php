@@ -68,6 +68,15 @@ class DiscussionController extends Controller
         }
         exit;
     }
+
+    public function getDiscussionReplies(){
+        $result = $this->discussionModel->getDiscussionReplies();
+        if($result !== null){
+            echo json_encode(['success' => true, 'data' => $result]);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Something went wrong']);
+        }
+    }
     public function replyOnDiscussion(){
         $data = $this->getRequest('POST');
 
@@ -88,5 +97,14 @@ class DiscussionController extends Controller
             echo json_encode(['success' => false, 'message' => 'Something went wrong']);
         }
         exit;
+    }
+
+    public function deleteDiscussion($id, $type){
+        $result = $this->discussionModel->deleteDiscussion($id, $type);
+        if($result){
+            echo json_encode(['success' => true, 'message' => 'Discussion / Reply Deleted Successfully']);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Something went wrong']);
+        }
     }
 }

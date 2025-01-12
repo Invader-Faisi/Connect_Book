@@ -58,19 +58,48 @@
 
 <script>
     $(document).ready(function() {
-        // Data for the chart
-        const labels = ['Seminars', 'Reunions', 'Alumni Dinners', 'Guest Lecture'];
+
+        $.ajax({
+            url: URL + 'admin/getCounts/',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data[0];
+                    $('#alumniCount').text(data.alumni);
+                    $('#studentsCount').text(data.student);
+                    $('#jobsCount').text(data.jobs);
+                    $('#mentorshipCount').text(data.mentorship);
+                } else {
+                    toastr.error('Failed to load data.');
+                }
+            },
+            error: function(xhr, status, error) {
+                toastr.error('An error occurred while loading the data. Please try again.');
+            }
+        });
+
+        const labels = [];
         const data = {
             labels: labels,
-            datasets: [{
-                label: 'Event Participation Rates',
-                backgroundColor: 'rgba(99, 132, 255, 0.2)',
-                borderColor: 'rgba(99, 132, 255, 1)',
-                data: [65, 59, 80, 81],
-            }]
+            datasets: [
+                {
+                    label: 'Number of Events',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    data: []
+                },
+                {
+                    label: 'Number of Participants',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    data: []
+                }
+            ]
         };
 
-        // Configuration for the chart
         const config = {
             type: 'bar',
             data: data,
@@ -84,10 +113,41 @@
             }
         };
 
-        // Render the chart
         const analyticsChart = new Chart(
             $('#analyticsChart'),
             config
         );
+
+        // Fetch and update chart data
+        $.ajax({
+            url: URL + 'admin/getChartData/',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function(response) {
+                if (response.success) {
+                    const labels = [];
+                    const eventCounts = [];
+                    const participationCounts = [];
+
+                    response.data.forEach(function(item) {
+                        labels.push(item.event);
+                        eventCounts.push(item.event_count);
+                        participationCounts.push(item.participation_count);
+                    });
+
+                    // Update the chart
+                    analyticsChart.data.labels = labels;
+                    analyticsChart.data.datasets[0].data = eventCounts;
+                    analyticsChart.data.datasets[1].data = participationCounts;
+                    analyticsChart.update();
+                } else {
+                    toastr.error('Failed to load event participation data.');
+                }
+            },
+            error: function(xhr, status, error) {
+                toastr.error('An error occurred while loading the data. Please try again.');
+            }
+        });
+
     });
 </script>

@@ -55,47 +55,78 @@
 
 
     <script>
-        // Getting user profile base in user type
         $(document).ready(function() {
 
-            $.ajax({
-                url: BASE_URL + 'mentor/getMentees/' + user_id,
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        $('#menteeList').empty();
-                        response.data.forEach(mentee => {
-                           const menteeList = `
-                            <div class="list-group-item list-group-item-action" >
-                                <p class="fw-bold text-primary text-center">${mentee.mentorOffer}</p>
-                               <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">${mentee.name}</h5>
-                                    <small>Year of Study: ${mentee.yearOfStudy}</small>
-                                </div>
-                                <p class="mb-1">Course: ${mentee.course}</p>
-                                <small>${mentee.description}</small>
-                            </div>
-                           `;
-                            $('#menteeList').append(menteeList);
-                        });
-                    } else {
-                        toastr.error('Failed to fetch news:', response.message);
+            loadMentorship();
+
+            function loadMentorship() {
+                $.ajax({
+                    url: BASE_URL + 'mentor/getMentees/' + user_id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#menteeList').empty();
+                            response.data.forEach(mentee => {
+                                let actionButton = '';
+                                if (mentee.action === 'Pending') {
+                                    actionButton = `<button class="btn btn-primary btn-sm approve-btn" data-id="${mentee.id}">Approve</button>`;
+                                }
+
+                                const menteeList = `
+                    <div class="list-group-item list-group-item-action">
+                        <p class="fw-bold text-primary text-center">${mentee.mentorOffer}</p>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">${mentee.name}</h5>
+                            <small>Year of Study: ${mentee.yearOfStudy}</small>
+                        </div>
+                        <p class="mb-1">Course: ${mentee.course}</p>
+                        <small>${mentee.description}</small>
+                        ${actionButton}
+                    </div>
+                `;
+                                $('#menteeList').append(menteeList);
+                            });
+
+                            // Attach event listener to approve buttons
+                            $('.approve-btn').click(function () {
+                                const id = $(this).data('id');
+                                $.ajax({
+                                    url: BASE_URL + 'mentor/approveMentorship/' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    success: function (response) {
+                                        if (response.success) {
+                                            toastr.success('Mentorship approved successfully.');
+                                            loadMentorship();
+                                        } else {
+                                            toastr.error('Failed to approve mentorship');
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        toastr.error('An error occurred while approving the mentorship. Please try again.');
+                                    }
+                                });
+                            });
+                        } else {
+                            toastr.error('Failed to fetch news:', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            toastr.error(response.message);
+                        } catch (e) {
+                            toastr.error('An error occurred while processing your request. Please try again.');
+                        }
                     }
-                },
-                error: function (xhr, status, error) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        toastr.error(response.message);
-                    } catch (e) {
-                        toastr.error('An error occurred while processing your request. Please try again.');
-                    }
-                }
-            });
+                });
+            }
 
 
 
-            //updating alumni profile
+
+            //post mentorship
             $('#mentorshipForm').on('submit', function(e) {
                 e.preventDefault();
                 var formData = $(this).serialize();

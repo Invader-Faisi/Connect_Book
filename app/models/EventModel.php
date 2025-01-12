@@ -13,9 +13,9 @@ class EventModel extends Model
 
     public function addEvent(Event $event, $id = ''){
         if($id != ''){
-            return $this->insertObject('event',$event);
-        }else{
             return  $this->updateObject('event',$event, $id);
+        }else{
+            return $this->insertObject('event',$event);
         }
 
     }
@@ -37,5 +37,14 @@ class EventModel extends Model
 
     public function getEventById($id){
         return $this->selectWhere('event', ['id' => $id]);
+    }
+
+    public function getAllEventRegistration($event){
+        return $this->selectFromMultipleTables(
+            ['event_participation', 'users'],
+            ['event_participation.event_id = "'.$event.'" AND event_participation.email = users.email'],
+            ['INNER JOIN'],
+            'event_participation.*, users.userType'
+        );
     }
 }
