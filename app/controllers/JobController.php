@@ -24,7 +24,7 @@ class JobController extends Controller
         exit;
     }
 
-    public function postJobInternship(){
+    public function postJobInternship($id = ""){
         $data = $this->getRequest('POST');
 
         if (empty($data)) {
@@ -41,7 +41,12 @@ class JobController extends Controller
         );
         $jobData->setCreaterId($this->getSession('user_id'));
 
-        $result = $this->jobModel->postJobInternship($jobData);
+        if($id == ''){
+            $result = $this->jobModel->postJobInternship($jobData);
+        }else{
+            $result = $this->jobModel->postJobInternship($jobData,$id);
+        }
+
         if($result === true){
             echo json_encode(['success' => true, 'message' => 'Job / Internship added successfully.']);
         }else{
@@ -77,6 +82,25 @@ class JobController extends Controller
             echo json_encode(['success' => true, 'message' => 'Job / Internship applied successfully.']);
         }else{
             echo json_encode(['success' => false, 'message' => 'Something went wrong.']);
+        }
+        exit;
+    }
+
+    public function getJobById($id){
+        $result = $this->jobModel->getJobById($id);
+        if($result != null){
+            echo json_encode(['success' => true, 'data' => $result]);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Something went wrong.']);
+        }
+    }
+
+    public function deleteJobInternship($id){
+        $result = $this->jobModel->deleteJobInternship($id);
+        if($result === true){
+            echo json_encode(['success' => true, 'message' => 'Job deleted successfully!']);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Something went wrong!']);
         }
         exit;
     }

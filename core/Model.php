@@ -156,6 +156,7 @@ class Model {
         }, $columns));
 
         $sql = "UPDATE $table SET $setString WHERE id = ?";
+
         $stmt = $this->db->prepare($sql);
 
         try {

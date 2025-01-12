@@ -17,6 +17,7 @@ class EventController extends Controller
     {
         $data = $this->getRequest('POST');
 
+
         if (empty($data)) {
             return;
         }
@@ -103,5 +104,14 @@ class EventController extends Controller
             echo json_encode(['success' => false, 'message' => 'Something went wrong']);
         }
         exit;
+    }
+
+    public function getAllEventRegistration($event){
+        $result = $this->eventModel->getAllEventRegistration($event);
+        if($result != null){
+            echo json_encode(['success' => true, 'data' => $result]);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'No Registration found']);
+        }
     }
 }

@@ -57,13 +57,22 @@ if (!isset($_SESSION['user_name'])) {
                             <i class="bi bi-house-door"></i> Home
                         </a>
                         <a href="page?page=admin-components/event" class="list-group-item list-group-item-action menu">
-                            <i class="bi bi-person"></i> Event Management
+                            <i class="bi bi-card-checklist"></i> Event Management
                         </a>
-                        <a href="page?page=admin-components/job" class="list-group-item list-group-item-action menu">
+                        <a href="page?page=admin-components/job-internship" class="list-group-item list-group-item-action menu">
                             <i class="bi bi-briefcase"></i> Job / Internship Portal
                         </a>
                         <a href="page?page=admin-components/news" class="list-group-item list-group-item-action menu">
                             <i class="bi bi-newspaper"></i> News & Updates
+                        </a>
+                        <a href="page?page=admin-components/discussion" class="list-group-item list-group-item-action menu">
+                            <i class="bi bi-people"></i> Discussion Forum
+                        </a>
+                        <a href="page?page=admin-components/alumni" class="list-group-item list-group-item-action menu">
+                            <i class="bi bi-person"></i> Alumni Rewards
+                        </a>
+                        <a href="page?page=admin-components/alumni-report" class="list-group-item list-group-item-action menu">
+                            <i class="bi bi-printer"></i> Alumni Report
                         </a>
                     </div>
                 </div>
@@ -86,5 +95,6 @@ if (!isset($_SESSION['user_name'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
         <h5 class="card-title fw-bold" style="color: #640D5F;">Alumni Rewards</h5>
         <div class="row">
             <div class="col"><strong>Contribution</strong></div>
-            <div class="col"><strong>Rewards</strong></div>
+            <div class="col"><strong>Reward Points</strong></div>
         </div>
         <div class="row">
             <div class="col" id="jobs">Jobs</div>
