@@ -35,7 +35,7 @@ class MentorModel extends Model
                 'mentor_request.menteeId = students.id'
             ],
             ['JOIN', 'JOIN'],
-            'students.name, students.course, students.yearOfStudy, mentorship.mentorOffer, mentorship.description',
+            'students.name, students.course, students.yearOfStudy, mentorship.mentorOffer, mentorship.description,mentor_request.id,mentor_request.action',
             'mentorship.alumniId = "'.$id.'"'
         );
     }
@@ -55,6 +55,10 @@ class MentorModel extends Model
 
     public function applyForMentorship(\stdClass $mentorship){
         return $this->insertObject('mentor_request', $mentorship);
+    }
+
+    public function approveMentorship($id){
+        return $this->executeWithQuery('UPDATE mentor_request SET action = "Approved" WHERE id = ?', [$id]);
     }
 
 

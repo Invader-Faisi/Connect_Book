@@ -20,11 +20,17 @@
                     let mentorship = response.data.reverse();
 
                     mentorship.forEach(function (mentor) {
+                        let row = '';
+                        if(mentor.action === 'Pending'){
+                            row = `<span class="text-warning">${mentor.action}</span>`;
+                        }else{
+                            row = `<span class="text-success">${mentor.action}</span>`;
+                        }
                         let listItem = `
                     <li class="list-group-item">
                         <h5 class="text-primary">${mentor.mentorOffer}</h5>
                         <span class="text-muted">${mentor.name}</span>
-                        <span class="text-warning">${mentor.action}</span>
+                        ${row}
                     </li>
                 `;
                         $('#myMentorList').append(listItem);

@@ -115,4 +115,13 @@ class MentorController extends Controller
         exit;
     }
 
+    public function approveMentorship($id){
+        $result = $this->mentorModel->approveMentorship($id);
+        if($result !== null){
+            echo json_encode(['success' => true, 'message' => 'Mentorship Approved successfully.']);
+        }else{
+            echo json_encode(['success' => false, 'message' => 'Something went wrong.']);
+        }
+    }
+
 }

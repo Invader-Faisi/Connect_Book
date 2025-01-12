@@ -1,72 +1,63 @@
-$(document).ready(function() {
-    // Initialize an empty chart
-    const labels = [];
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: 'Number of Events',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-                data: []
-            },
-            {
-                label: 'Number of Participants',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1,
-                data: []
-            }
-        ]
-    };
-
-    const config = {
-        type: 'bar',
-        data: data,
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+$.ajax({
+    url: BASE_URL + 'mentor/getMentees/' + user_id,
+    type: 'GET',
+    dataType: 'json',
+    success: function (response) {
+        if (response.success) {
+            $('#menteeList').empty();
+            response.data.forEach(mentee => {
+                let actionButton = '';
+                if (mentee.action === 'pending') {
+                    actionButton = `<button class="btn btn-primary btn-sm approve-btn" data-id="${mentee.id}">Approve</button>`;
                 }
-            }
-        }
-    };
 
-    const analyticsChart = new Chart(
-        $('#analyticsChart'),
-        config
-    );
+                const menteeList = `
+                    <div class="list-group-item list-group-item-action">
+                        <p class="fw-bold text-primary text-center">${mentee.mentorOffer}</p>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">${mentee.name}</h5>
+                            <small>Year of Study: ${mentee.yearOfStudy}</small>
+                        </div>
+                        <p class="mb-1">Course: ${mentee.course}</p>
+                        <small>${mentee.description}</small>
+                        ${actionButton}
+                    </div>
+                `;
+                $('#menteeList').append(menteeList);
+            });
 
-    // Fetch and update chart data
-    $.ajax({
-        url: URL + 'admin/getEventParticipationCounts/',
-        type: 'GET',
-        dataType: 'JSON',
-        success: function(response) {
-            if (response.success) {
-                const labels = [];
-                const eventCounts = [];
-                const participationCounts = [];
-
-                response.data.forEach(function(item) {
-                    labels.push(item.event);
-                    eventCounts.push(item.event_count);
-                    participationCounts.push(item.participation_count);
+            // Attach event listener to approve buttons
+            $('.approve-btn').click(function() {
+                const menteeId = $(this).data('id');
+                $.ajax({
+                    url: BASE_URL + 'mentor/approveMentee/' + menteeId,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success('Mentee approved successfully.');
+                            // Optionally refresh the list or update the button state
+                            $(this).text('Approved').removeClass('btn-primary').addClass('btn-success').prop('disabled', true);
+                        } else {
+                            toastr.error('Failed to approve mentee:', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error('An error occurred while approving the mentee. Please try again.');
+                    }
                 });
-
-                // Update the chart
-                analyticsChart.data.labels = labels;
-                analyticsChart.data.datasets[0].data = eventCounts;
-                analyticsChart.data.datasets[1].data = participationCounts;
-                analyticsChart.update();
-            } else {
-                toastr.error('Failed to load event participation data.');
-            }
-        },
-        error: function(xhr, status, error) {
-            toastr.error('An error occurred while loading the data. Please try again.');
+            });
+        } else {
+            toastr.error('Failed to fetch news:', response.message);
         }
-    });
+    },
+    error: function (xhr, status, error) {
+        try {
+            const response = JSON.parse(xhr.responseText);
+            toastr.error(response.message);
+        } catch (e) {
+            toastr.error('An error occurred while processing your request. Please try again.');
+        }
+    }
 });
+
